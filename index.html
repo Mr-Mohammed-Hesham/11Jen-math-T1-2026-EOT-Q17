@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎯 Odds of Success & Failure - رياضيات 11 عام | Mr. Mohammed Hesham</title>
+<meta name="description" content="امتحان تفاعلي عن إيجاد فرص نجاح وفشل حدث والاحتمال بدون إعادة - رياضيات صف 11 عام">
+<meta name="author" content="Mr. Mohammed Hesham">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #fae8ff 0%, #f0abfc 100%); }
+body.en-mode { font-family: 'Inter', sans-serif; direction: ltr; }
+.arabic-math { font-family: 'Amiri', 'Cairo', serif; }
+.correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+.incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+.timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: 0.7; } }
+@media print { .no-print { display: none !important; } }
+.success-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.875rem; }
+.grade-excellent { background: #dcfce7; color: #166534; }
+.grade-good { background: #fef3c7; color: #92400e; }
+.grade-pass { background: #dbeafe; color: #1e40af; }
+.grade-fail { background: #fee2e2; color: #991b1b; }
+.lang-switch { position: fixed; top: 16px; left: 16px; z-index: 100; background: white; padding: 6px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px; border: 2px solid #a21caf; }
+body.en-mode .lang-switch { left: auto; right: 16px; }
+.lang-btn { padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; border: none; font-size: 0.875rem; background: transparent; color: #6b7280; }
+.lang-btn.active { background: #a21caf; color: white; }
+.shuffle-badge { display: inline-block; background: linear-gradient(135deg, #a21caf, #86198f); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-right: 8px; }
+body.en-mode .shuffle-badge { margin-right: 0; margin-left: 8px; }
+.math-display { display: inline-block; direction: ltr; font-family: 'Amiri', serif; font-size: 1.15em; padding: 2px 8px; background: #fae8ff; border-radius: 4px; margin: 2px; color: #86198f; font-weight: 700; }
+.save-indicator { position: fixed; bottom: 20px; left: 20px; z-index: 200; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+body.en-mode .save-indicator { left: auto; right: 20px; }
+.save-indicator.show { opacity: 1; }
+.formula-box { background: #fae8ff; border: 2px solid #a21caf; border-radius: 8px; padding: 12px; margin: 10px 0; font-family: 'Amiri', serif; direction: ltr; text-align: center; }
+.svg-graph { display: block; margin: 12px auto; background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px; max-width: 100%; }
+.graph-container { text-align: center; margin: 10px 0; }
+.module-badge { display: inline-block; padding: 4px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-bottom: 8px; }
+.module-1 { background: #fae8ff; color: #86198f; }
+.module-2 { background: #dbeafe; color: #1e40af; }
+.module-3 { background: #ecfdf5; color: #065f46; }
+.module-4 { background: #fef3c7; color: #92400e; }
+.module-5 { background: #ede9fe; color: #5b21b6; }
+.module-6 { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+<div class="lang-switch no-print">
+<button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+<button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+</div>
+
+<div id="saveIndicator" class="save-indicator">💾 <span data-ar="تم الحفظ" data-en="Saved">تم الحفظ</span></div>
+
+<div id="timer-container" class="max-w-5xl mx-auto mb-4 text-center no-print">
+<div class="bg-white p-4 rounded-2xl shadow-lg inline-block border-2 border-fuchsia-100">
+<span class="text-gray-600 ml-2">⏰ <span data-ar="الوقت المتبقي:" data-en="Time Left:">الوقت المتبقي:</span></span>
+<span id="timer" class="text-2xl font-bold text-fuchsia-700 font-mono">45:00</span>
+<span class="shuffle-badge">🎯 <span data-ar="فرص النجاح والفشل" data-en="Odds of Success & Failure">فرص النجاح والفشل</span> - 30 <span data-ar="سؤال" data-en="Questions">سؤال</span></span>
+</div>
+</div>
+
+<div class="max-w-5xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+<button onclick="toggleAnswers()" class="bg-fuchsia-700 hover:bg-fuchsia-800 text-white px-5 py-2 rounded-xl font-medium transition shadow">👀 <span data-ar="إظهار/إخفاء الإجابات" data-en="Show/Hide Answers">إظهار/إخفاء الإجابات</span></button>
+<button onclick="window.print()" class="bg-gray-700 hover:bg-gray-900 text-white px-5 py-2 rounded-xl font-medium transition shadow">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button>
+<button onclick="reshuffleExam()" class="bg-gradient-to-r from-fuchsia-700 to-purple-600 hover:from-fuchsia-800 hover:to-purple-700 text-white px-5 py-2 rounded-xl font-medium transition shadow">🔄 <span data-ar="أسئلة جديدة" data-en="New Questions">أسئلة جديدة</span></button>
+<button onclick="clearProgress()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-medium transition shadow">🗑️ <span data-ar="مسح التقدم" data-en="Clear Progress">مسح التقدم</span></button>
+</div>
+
+<header class="max-w-5xl mx-auto bg-white p-8 rounded-3xl shadow-2xl mb-8 border-4 border-fuchsia-500">
+<div class="text-center">
+<div class="inline-block bg-fuchsia-700 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">MATH GRADE 11 GENERAL - QUESTION 18</div>
+<h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">🎯 <span data-ar="إيجاد فرص نجاح وفشل حدث" data-en="Finding the Odds of Success and Failure of an Event">إيجاد فرص نجاح وفشل حدث</span></h1>
+<h2 class="text-xl text-fuchsia-700 font-semibold mb-2"><span data-ar="الوحدة 3 - الدرس 3-5: الاحتمال والفرص | ص 179 (22 - 30)" data-en="Unit 3 - Lesson 3-5: Probability & Odds | Page 179 (22-30)">الوحدة 3 - الدرس 3-5: الاحتمال والفرص | ص 179 (22 - 30)</span></h2>
+<p class="text-gray-600 mb-4"><span data-ar="احتمال بدون إعادة + الفرص = نجاح : فشل" data-en="Probability without replacement + Odds = success : failure">احتمال بدون إعادة + الفرص = نجاح : فشل</span></p>
+<p class="text-sm text-green-600 font-semibold">💾 <span data-ar="يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام" data-en="Auto-saved - 30 questions in 6 sections">يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام</span></p>
+</div>
+<div class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+<span>📅 <span data-ar="التاريخ:" data-en="Date:">التاريخ:</span> <input type="text" id="examDate" class="border-b-2 border-fuchsia-300 bg-transparent w-32 text-center"></span>
+<span>😊 <span data-ar="الاسم:" data-en="Name:">الاسم:</span> <input type="text" id="studentName" class="border-b-2 border-fuchsia-300 bg-transparent w-40 text-center" data-placeholder-ar="اكتب اسمك" data-placeholder-en="Your name" placeholder="اكتب اسمك"></span>
+<span>🏫 <span data-ar="الشعبة:" data-en="Class:">الشعبة:</span> <input type="text" id="studentClass" class="border-b-2 border-fuchsia-300 bg-transparent w-32 text-center" data-placeholder-ar="الشعبة" data-placeholder-en="Class" placeholder="الشعبة"></span>
+<span>⏰ <span data-ar="المدة: 45 دقيقة" data-en="Duration: 45 min">المدة: 45 دقيقة</span></span>
+<span>📊 <span data-ar="المجموع: 100 درجة" data-en="Total: 100 points">المجموع: 100 درجة</span></span>
+</div>
+</header>
+
+<div class="max-w-5xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-lg border-2 border-fuchsia-200 no-print">
+<h3 class="font-bold text-lg mb-3 text-fuchsia-800 text-center">🎯 <span data-ar="قوانين الاحتمال والفرص" data-en="Probability & Odds Rules">قوانين الاحتمال والفرص</span></h3>
+<div class="grid md:grid-cols-3 gap-3 text-sm">
+<div class="formula-box"><strong><span data-ar="بدون إعادة:" data-en="Without replacement:">بدون إعادة:</span></strong><br><span class="math-display">P = a/n × (a-1)/(n-1)</span><br><span data-ar="المقام ينقص 1" data-en="Denominator decreases by 1">المقام ينقص 1</span></div>
+<div class="formula-box"><strong><span data-ar="الفرص:" data-en="Odds:">الفرص:</span></strong><br><span class="math-display">نجاح : فشل</span><br><span data-ar="من P = نجاح/الكل" data-en="From P = success/total">من P = نجاح/الكل</span></div>
+<div class="formula-box"><strong><span data-ar="المستقلان:" data-en="Independent:">المستقلان:</span></strong><br><span class="math-display">P(A) × P(B)</span><br><span data-ar="لا يتأثر أحدهما بالآخر" data-en="No influence between them">لا يتأثر أحدهما بالآخر</span></div>
+</div>
+<div id="method-holder" class="mt-2"></div>
+</div>
+
+<main class="max-w-5xl mx-auto space-y-8" id="exam-content"></main>
+
+<div class="text-center no-print pb-8 mt-8">
+<button onclick="gradeExam()" class="bg-gradient-to-r from-fuchsia-700 to-purple-600 hover:from-fuchsia-800 hover:to-purple-700 text-white text-lg px-12 py-4 rounded-2xl font-bold shadow-xl transition transform hover:scale-105">🎯 <span data-ar="صحح إجاباتي!" data-en="Grade My Exam!">صحح إجاباتي!</span></button>
+</div>
+
+<div id="results-panel" class="max-w-5xl mx-auto mt-8 bg-white p-8 rounded-3xl shadow-2xl border-4 border-fuchsia-500 hidden no-print">
+<h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">🏆 <span data-ar="نتيجتك يا بطل!" data-en="Your Result, Champion!">نتيجتك يا بطل!</span> 🏆</h2>
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+<div class="bg-fuchsia-50 p-4 rounded-xl text-center"><p>😊 <span data-ar="الاسم" data-en="Name">الاسم</span></p><p id="res-name" class="font-bold text-xl text-fuchsia-700">-</p></div>
+<div class="bg-purple-50 p-4 rounded-xl text-center"><p>📅 <span data-ar="التاريخ" data-en="Date">التاريخ</span></p><p id="res-date" class="font-bold text-xl text-purple-700">-</p></div>
+<div class="bg-fuchsia-50 p-4 rounded-xl text-center"><p>🌟 <span data-ar="المجموع" data-en="Total">المجموع</span></p><p id="res-total" class="font-bold text-3xl text-fuchsia-700">0 / 100</p></div>
+</div>
+<div class="text-center mb-6">
+<span id="success-badge" class="success-badge grade-excellent">-</span>
+<p id="success-percent" class="text-4xl font-bold text-fuchsia-700 mt-2">0%</p>
+<p class="text-sm text-gray-500"><span data-ar="نسبة النجاح" data-en="Success Rate">نسبة النجاح</span></p>
+</div>
+<div class="bg-gray-50 p-6 rounded-xl mb-6">
+<h3 class="font-bold text-lg mb-4 text-gray-800">📊 <span data-ar="أداؤك في كل قسم:" data-en="Your Performance by Section:">أداؤك في كل قسم:</span></h3>
+<div class="space-y-3" id="sections-performance"></div>
+</div>
+<div class="text-center">
+<button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-fuchsia-700 to-purple-600 text-white text-lg px-8 py-3 rounded-2xl font-bold shadow-xl transition">📧 <span data-ar="أرسل النتيجة للمعلم" data-en="Send Result to Teacher">أرسل النتيجة للمعلم</span></button>
+<p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+</div>
+</div>
+
+<footer class="max-w-5xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+© Odds of Success & Failure - Grade 11 General | Mr. Mohammed Hesham 🎯
+</footer>
+
+<script>
+const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+const SERVICE_ID = "service_w15m64i";
+const TEMPLATE_ID = "template_5b0u2tq";
+const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+emailjs.init(PUBLIC_KEY);
+
+const STORAGE_KEY = 'odds_success_failure_g11_v1';
+const TOTAL_TIME = 2700;
+const TOTAL_QUESTIONS = 30;
+const TOTAL_SECTIONS = 6;
+const QUESTIONS_PER_SECTION = 5;
+
+let currentSeed = null, answersVisible = false, saveIndicatorTimeout = null;
+let currentLang = 'ar', timeRemaining = TOTAL_TIME, timerInterval;
+let examData, correctAnswersMap = {}, rng = null;
+
+function mulberry32(a){return function(){var t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function showSaveIndicator(){const i=document.getElementById('saveIndicator');i.classList.add('show');if(saveIndicatorTimeout)clearTimeout(saveIndicatorTimeout);saveIndicatorTimeout=setTimeout(()=>i.classList.remove('show'),1500)}
+function saveState(s=true){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({seed:currentSeed,lang:currentLang,studentName:document.getElementById('studentName').value,studentClass:document.getElementById('studentClass').value,examDate:document.getElementById('examDate').value,answers:getSelectedAnswers(),timeRemaining:timeRemaining,answersVisible:answersVisible,savedAt:Date.now()}));if(s)showSaveIndicator()}catch(e){console.error(e)}}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function getSelectedAnswers(){const a={};for(let i=0;i<TOTAL_QUESTIONS;i++){const s=document.querySelector('input[name="q'+i+'"]:checked');if(s)a[i]=s.value}return a}
+function restoreAnswers(a){if(!a)return;for(const[i,v]of Object.entries(a)){const r=document.querySelector('input[name="q'+i+'"][value="'+v+'"]');if(r)r.checked=true}}
+function clearProgress(){if(confirm(currentLang==='ar'?'⚠️ هل أنت متأكد من مسح كل التقدم؟':'⚠️ Clear all progress?')){localStorage.removeItem(STORAGE_KEY);location.reload()}}
+function setupAnswerListeners(){document.getElementById('exam-content').addEventListener('change',e=>{if(e.target.type==='radio')saveState()})}
+function setupInputListeners(){['studentName','studentClass','examDate'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',()=>saveState(false));el.addEventListener('blur',()=>saveState())}})}
+
+// ==================== SVG DIAGRAMS ====================
+const svgGraphs = {
+fig_total: `<svg class="svg-graph" width="500" height="230" viewBox="0 0 500 230" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="220" rx="12" fill="#fae8ff" stroke="#a21caf" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#86198f" font-weight="bold">🎵 مجموعة رشيد: 40 قرصاً (المجموع أولاً!)</text>
+<rect x="40" y="50" width="100" height="46" fill="#f0abfc" stroke="#a21caf" stroke-width="2"/><text x="90" y="78" text-anchor="middle" font-size="11" fill="#86198f" font-weight="bold">راب 10</text>
+<rect x="140" y="50" width="180" height="46" fill="#e879f9" stroke="#a21caf" stroke-width="2"/><text x="230" y="78" text-anchor="middle" font-size="11" fill="#701a75" font-weight="bold">روك 18</text>
+<rect x="320" y="50" width="80" height="46" fill="#f0abfc" stroke="#a21caf" stroke-width="2"/><text x="360" y="78" text-anchor="middle" font-size="11" fill="#86198f" font-weight="bold">شعبية 8</text>
+<rect x="400" y="50" width="40" height="46" fill="#fbcfe8" stroke="#a21caf" stroke-width="2"/><text x="420" y="78" text-anchor="middle" font-size="10" fill="#86198f" font-weight="bold">بوب 4</text>
+<rect x="40" y="106" width="400" height="30" rx="6" fill="#fdf4ff" stroke="#a21caf" stroke-width="2"/>
+<text x="240" y="126" text-anchor="middle" font-size="12" fill="#86198f" font-family="'Amiri',serif" font-weight="bold">المجموع = 10 + 18 + 8 + 4 = 40 قرصاً</text>
+<rect x="40" y="146" width="400" height="64" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="240" y="166" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">⚠️ بدون إعادة: بعد السحب الأول ينقص العدد!</text>
+<text x="240" y="184" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Amiri',serif" font-weight="bold">الأول: من 40 | الثاني: من 39</text>
+<text x="240" y="202" text-anchor="middle" font-size="10" fill="#92400e" font-family="'Amiri',serif">P = (عدد/40) × (عدد-1)/39</text>
+</svg>`,
+
+fig_tree_two: `<svg class="svg-graph" width="500" height="250" viewBox="0 0 500 250" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="240" rx="12" fill="#fae8ff" stroke="#a21caf" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#86198f" font-weight="bold">🌳 سحب قرصين: كلاهما من أغاني البوب (4)</text>
+<circle cx="60" cy="120" r="14" fill="#f0abfc" stroke="#a21caf" stroke-width="2.5"/><text x="60" y="125" text-anchor="middle" font-size="9" fill="#701a75" font-weight="bold">بدء</text>
+<line x1="74" y1="112" x2="170" y2="70" stroke="#a21caf" stroke-width="2"/>
+<line x1="74" y1="128" x2="170" y2="170" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="115" y="82" font-size="10" fill="#16a34a" font-weight="bold">بوب 4/40</text>
+<text x="115" y="160" font-size="10" fill="#6b7280">غير 36/40</text>
+<circle cx="182" cy="66" r="13" fill="#fbcfe8" stroke="#a21caf" stroke-width="2.5"/><text x="182" y="71" text-anchor="middle" font-size="9" fill="#701a75" font-weight="bold">بوب</text>
+<line x1="195" y1="58" x2="280" y2="40" stroke="#a21caf" stroke-width="2"/>
+<line x1="195" y1="74" x2="280" y2="92" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="235" y="42" font-size="10" fill="#16a34a" font-weight="bold">بوب 3/39</text>
+<text x="235" y="96" font-size="10" fill="#6b7280">غير 36/39</text>
+<rect x="285" y="26" width="90" height="28" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="330" y="45" text-anchor="middle" font-size="10" fill="#166534" font-family="'Amiri',serif" font-weight="bold">بوب، بوب ✓</text>
+<rect x="60" y="120" width="380" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="142" text-anchor="middle" font-size="12" fill="#92400e" font-family="'Amiri',serif" font-weight="bold">P = 4/40 × 3/39 = 12/1560</text>
+<text x="250" y="164" text-anchor="middle" font-size="13" fill="#166534" font-family="'Amiri',serif" font-weight="bold">P = 1/130</text>
+<text x="250" y="186" text-anchor="middle" font-size="9.5" fill="#92400e" font-weight="bold">نضرب على طول المسار الأخضر (قاعدة الضرب)</text>
+</svg>`,
+
+fig_odds: `<svg class="svg-graph" width="500" height="240" viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="230" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#92400e" font-weight="bold">⚖️ من الاحتمال إلى الفرص: P = 1/5 ⇒ فرص 1 : 4</text>
+<rect x="60" y="50" width="76" height="50" fill="#bbf7d0" stroke="#16a34a" stroke-width="2.5"/>
+<text x="98" y="80" text-anchor="middle" font-size="12" fill="#166534" font-weight="bold">نجاح 1</text>
+<rect x="136" y="50" width="304" height="50" fill="#fecaca" stroke="#dc2626" stroke-width="2.5"/>
+<text x="288" y="80" text-anchor="middle" font-size="12" fill="#991b1b" font-weight="bold">فشل 4</text>
+<rect x="60" y="100" width="380" height="26" rx="4" fill="#fff" stroke="#92400e" stroke-width="2"/>
+<text x="250" y="118" text-anchor="middle" font-size="11" fill="#92400e" font-weight="bold">الكل = 5 أجزاء ⇒ P(نجاح) = 1/5</text>
+<rect x="60" y="140" width="380" height="44" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="250" y="158" text-anchor="middle" font-size="12" fill="#166534" font-weight="bold">الفرص (نجاح : فشل) = 1 : 4</text>
+<text x="250" y="176" text-anchor="middle" font-size="10" fill="#166534">وليس 1 : 5 (هذا احتمال وليس فرصاً!)</text>
+<rect x="60" y="194" width="380" height="30" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="214" text-anchor="middle" font-size="10.5" fill="#92400e" font-family="'Amiri',serif" font-weight="bold">عكسياً: فرص a : b ⇒ P = a/(a+b)</text>
+</svg>`,
+
+fig_balls: `<svg class="svg-graph" width="500" height="230" viewBox="0 0 500 230" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="220" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#991b1b" font-weight="bold">🧰 الصندوق: 6 كرات زجاجية</text>
+<rect x="60" y="45" width="380" height="110" rx="14" fill="#fff" stroke="#991b1b" stroke-width="2.5"/>
+<circle cx="120" cy="100" r="22" fill="#4ade80" stroke="#166534" stroke-width="2.5"/>
+<circle cx="190" cy="100" r="22" fill="#fde047" stroke="#a16207" stroke-width="2.5"/>
+<circle cx="260" cy="100" r="22" fill="#fde047" stroke="#a16207" stroke-width="2.5"/>
+<circle cx="330" cy="100" r="22" fill="#f87171" stroke="#991b1b" stroke-width="2.5"/>
+<circle cx="395" cy="100" r="22" fill="#f87171" stroke="#991b1b" stroke-width="2.5"/>
+<circle cx="362" cy="132" r="22" fill="#f87171" stroke="#991b1b" stroke-width="2.5"/>
+<text x="120" y="140" text-anchor="middle" font-size="9" fill="#166534" font-weight="bold">أخضر 1</text>
+<text x="225" y="140" text-anchor="middle" font-size="9" fill="#a16207" font-weight="bold">أصفر 2</text>
+<text x="360" y="168" text-anchor="middle" font-size="9" fill="#991b1b" font-weight="bold">أحمر 3</text>
+<rect x="60" y="168" width="380" height="46" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="186" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Amiri',serif" font-weight="bold">P(حمرتان) = 3/6 × 2/5 = 1/5</text>
+<text x="250" y="205" text-anchor="middle" font-size="11" fill="#166534" font-weight="bold">الفرص = 1 : 4 (نجاح 1 وفشل 4)</text>
+</svg>`,
+
+fig_dice_indep: `<svg class="svg-graph" width="500" height="240" viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="230" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#065f46" font-weight="bold">🎲 حدثان مستقلان: مكعب مرتين (5 ثم 5)</text>
+<g stroke="#10b981" stroke-width="1">
+<rect x="90" y="45" width="45" height="30" fill="#d1fae5"/><rect x="135" y="45" width="45" height="30" fill="#d1fae5"/><rect x="180" y="45" width="45" height="30" fill="#d1fae5"/><rect x="225" y="45" width="45" height="30" fill="#d1fae5"/><rect x="270" y="45" width="45" height="30" fill="#a7f3d0" stroke-width="2.5"/><rect x="315" y="45" width="45" height="30" fill="#d1fae5"/>
+<rect x="90" y="75" width="45" height="30" fill="#d1fae5"/><rect x="135" y="75" width="45" height="30" fill="#d1fae5"/><rect x="180" y="75" width="45" height="30" fill="#d1fae5"/><rect x="225" y="75" width="45" height="30" fill="#d1fae5"/><rect x="270" y="75" width="45" height="30" fill="#d1fae5"/><rect x="315" y="75" width="45" height="30" fill="#d1fae5"/>
+<rect x="90" y="105" width="45" height="30" fill="#d1fae5"/><rect x="135" y="105" width="45" height="30" fill="#d1fae5"/><rect x="180" y="105" width="45" height="30" fill="#d1fae5"/><rect x="225" y="105" width="45" height="30" fill="#d1fae5"/><rect x="270" y="105" width="45" height="30" fill="#d1fae5"/><rect x="315" y="105" width="45" height="30" fill="#d1fae5"/>
+<rect x="90" y="135" width="45" height="30" fill="#d1fae5"/><rect x="135" y="135" width="45" height="30" fill="#d1fae5"/><rect x="180" y="135" width="45" height="30" fill="#d1fae5"/><rect x="225" y="135" width="45" height="30" fill="#d1fae5"/><rect x="270" y="135" width="45" height="30" fill="#d1fae5"/><rect x="315" y="135" width="45" height="30" fill="#d1fae5"/>
+<rect x="90" y="165" width="45" height="30" fill="#d1fae5"/><rect x="135" y="165" width="45" height="30" fill="#d1fae5"/><rect x="180" y="165" width="45" height="30" fill="#d1fae5"/><rect x="225" y="165" width="45" height="30" fill="#d1fae5"/><rect x="270" y="165" width="45" height="30" fill="#d1fae5"/><rect x="315" y="165" width="45" height="30" fill="#d1fae5"/>
+</g>
+<text x="292" y="65" text-anchor="middle" font-size="10" fill="#065f46" font-weight="bold">(5,5)</text>
+<rect x="380" y="60" width="100" height="120" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="2"/>
+<text x="430" y="85" text-anchor="middle" font-size="11" fill="#065f46" font-weight="bold">مستقلان:</text>
+<text x="430" y="110" text-anchor="middle" font-size="12" fill="#065f46" font-family="'Amiri',serif" font-weight="bold">1/6 × 1/6</text>
+<text x="430" y="138" text-anchor="middle" font-size="14" fill="#166534" font-family="'Amiri',serif" font-weight="bold">= 1/36</text>
+<text x="430" y="162" text-anchor="middle" font-size="9" fill="#065f46">خلية واحدة من 36</text>
+<rect x="90" y="202" width="270" height="24" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="225" y="219" text-anchor="middle" font-size="10" fill="#92400e" font-weight="bold">الاستقلال ⇒ المقام لا يتغير (6 ثم 6)</text>
+</svg>`,
+
+fig_replace: `<svg class="svg-graph" width="500" height="220" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="210" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#1e40af" font-weight="bold">🔁 مقارنة: بدون إعادة مقابل مع الإعادة</text>
+<rect x="40" y="45" width="200" height="120" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="140" y="68" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="bold">بدون إعادة</text>
+<text x="140" y="92" text-anchor="middle" font-size="12" fill="#1e40af" font-family="'Amiri',serif" font-weight="bold">3/8 × 2/7</text>
+<text x="140" y="114" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="bold">العدد والمجموع ينقصان</text>
+<text x="140" y="140" text-anchor="middle" font-size="11" fill="#166534" font-family="'Amiri',serif" font-weight="bold">= 6/56 = 3/28</text>
+<rect x="260" y="45" width="200" height="120" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="360" y="68" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="bold">مع الإعادة</text>
+<text x="360" y="92" text-anchor="middle" font-size="12" fill="#1e40af" font-family="'Amiri',serif" font-weight="bold">3/8 × 3/8</text>
+<text x="360" y="114" text-anchor="middle" font-size="10" fill="#166534" font-weight="bold">الكسور لا تتغير (مستقلان)</text>
+<text x="360" y="140" text-anchor="middle" font-size="11" fill="#166534" font-family="'Amiri',serif" font-weight="bold">= 9/64</text>
+<rect x="40" y="176" width="420" height="26" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="194" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">💡 اقرأ السؤال جيداً: «دون إعادتهما» ⇒ بدون إعادة</text>
+</svg>`,
+
+fig_complement: `<svg class="svg-graph" width="500" height="230" viewBox="0 0 500 230" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="220" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#5b21b6" font-weight="bold">🔄 المتممة: لونان مختلفان = 1 - لونان متشابهان</text>
+<rect x="50" y="45" width="190" height="90" rx="10" fill="#ddd6fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="145" y="68" text-anchor="middle" font-size="11" fill="#5b21b6" font-weight="bold">نفس اللون</text>
+<text x="145" y="90" text-anchor="middle" font-size="11" fill="#5b21b6" font-family="'Amiri',serif">حمرتان: 3/6×2/5 = 6/30</text>
+<text x="145" y="110" text-anchor="middle" font-size="11" fill="#5b21b6" font-family="'Amiri',serif">صفراوان: 2/6×1/5 = 2/30</text>
+<text x="145" y="128" text-anchor="middle" font-size="12" fill="#7c3aed" font-family="'Amiri',serif" font-weight="bold">المجموع = 8/30 = 4/15</text>
+<path d="M 245 90 L 275 90" stroke="#dc2626" stroke-width="2.5" marker-end="url(#cpA)"/>
+<rect x="280" y="45" width="170" height="90" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="365" y="68" text-anchor="middle" font-size="11" fill="#166534" font-weight="bold">لونان مختلفان</text>
+<text x="365" y="92" text-anchor="middle" font-size="12" fill="#166534" font-family="'Amiri',serif" font-weight="bold">1 - 4/15 = 11/15</text>
+<text x="365" y="116" text-anchor="middle" font-size="10" fill="#166534">الفرص = 11 : 4</text>
+<rect x="50" y="150" width="400" height="56" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="170" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">النجاح 11 والفشل 4 (من المقام 15)</text>
+<text x="250" y="190" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">⚠️ الفرص ليست 11 : 15 (هذا احتمال)</text>
+<defs><marker id="cpA" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#dc2626"/></marker></defs>
+</svg>`
+};
+
+// ==================== EXAM DATA ====================
+const originalExamData = {
+sections: [
+{ id:'s1', title:{ar:'🔹 القسم 1: قرصان من النوع نفسه (مثل 22، 23) (Q1-Q5)',en:'🔹 Section 1: Two Discs of Same Type (like 22, 23) (Q1-Q5)'}, questions:[
+{ q:{ar:'<strong>السؤال 1 (تمرين 22):</strong> لدى رشيد 10 راب و18 روك و8 شعبية و4 بوب (40 قرصاً). اختير قرصان عشوائياً. ما احتمال أن يكون كلاهما من أغاني البوب؟',en:'<strong>Q1 (Ex.22):</strong> 10 rap, 18 rock, 8 popular, 4 pop (40). Two chosen at random. P(both pop)?'},
+  svg: svgGraphs.fig_tree_two,
+  options:[{ar:'<span class="math-display">1/100</span>',en:'<span class="math-display">1/100</span>'},{ar:'<span class="math-display">1/130</span>',en:'<span class="math-display">1/130</span>'},{ar:'<span class="math-display">1/10</span>',en:'<span class="math-display">1/10</span>'},{ar:'<span class="math-display">3/260</span>',en:'<span class="math-display">3/260</span>'}],
+  correct:1, answer:{ar:'P = 4/40 × 3/39 = 12/1560 = 1/130',en:'P = 1/130'} },
+{ q:{ar:'<strong>السؤال 2 (تمرين 23):</strong> المجموعة نفسها. ما احتمال أن يكون القرصان كلاهما من الأغاني الشعبية؟',en:'<strong>Q2 (Ex.23):</strong> Same collection. P(both popular)?'},
+  options:[{ar:'<span class="math-display">7/195</span>',en:'<span class="math-display">7/195</span>'},{ar:'<span class="math-display">1/25</span>',en:'<span class="math-display">1/25</span>'},{ar:'<span class="math-display">1/5</span>',en:'<span class="math-display">1/5</span>'},{ar:'<span class="math-display">8/195</span>',en:'<span class="math-display">8/195</span>'}],
+  correct:0, answer:{ar:'P = 8/40 × 7/39 = 56/1560 = 7/195',en:'P = 7/195'} },
+{ q:{ar:'<strong>السؤال 3:</strong> المجموعة نفسها. ما احتمال أن يكون القرصان كلاهما من أغاني الراب؟',en:'<strong>Q3:</strong> Same collection. P(both rap)?'},
+  options:[{ar:'<span class="math-display">1/4</span>',en:'<span class="math-display">1/4</span>'},{ar:'<span class="math-display">3/52</span>',en:'<span class="math-display">3/52</span>'},{ar:'<span class="math-display">1/13</span>',en:'<span class="math-display">1/13</span>'},{ar:'<span class="math-display">9/40</span>',en:'<span class="math-display">9/40</span>'}],
+  correct:1, answer:{ar:'P = 10/40 × 9/39 = 90/1560 = 3/52',en:'P = 3/52'} },
+{ q:{ar:'<strong>السؤال 4:</strong> المجموعة نفسها. ما احتمال أن يكون القرصان كلاهما من أغاني الروك؟',en:'<strong>Q4:</strong> Same collection. P(both rock)?'},
+  options:[{ar:'<span class="math-display">9/20</span>',en:'<span class="math-display">9/20</span>'},{ar:'<span class="math-display">51/260</span>',en:'<span class="math-display">51/260</span>'},{ar:'<span class="math-display">17/40</span>',en:'<span class="math-display">17/40</span>'},{ar:'<span class="math-display">51/130</span>',en:'<span class="math-display">51/130</span>'}],
+  correct:1, answer:{ar:'P = 18/40 × 17/39 = 306/1560 = 51/260',en:'P = 51/260'} },
+{ q:{ar:'<strong>السؤال 5:</strong> المجموعة نفسها. ما احتمال ألا يكون أي من القرصين من أغاني البوب؟',en:'<strong>Q5:</strong> Same collection. P(neither is pop)?'},
+  options:[{ar:'<span class="math-display">9/10</span>',en:'<span class="math-display">9/10</span>'},{ar:'<span class="math-display">35/39</span>',en:'<span class="math-display">35/39</span>'},{ar:'<span class="math-display">21/26</span>',en:'<span class="math-display">21/26</span>'},{ar:'<span class="math-display">21/13</span>',en:'<span class="math-display">21/13</span>'}],
+  correct:2, answer:{ar:'غير البوب 36: P = 36/40 × 35/39 = 1260/1560 = 21/26',en:'P = 21/26'} }
+]},
+{ id:'s2', title:{ar:'🔹 القسم 2: قرصان من نوعين مختلفين (مثل 24، 25) (Q6-Q10)',en:'🔹 Section 2: Two Discs of Different Types (like 24, 25) (Q6-Q10)'}, questions:[
+{ q:{ar:'<strong>السؤال 6 (تمرين 24):</strong> المجموعة نفسها. ما احتمال أن يكون أحدهما راب والآخر روك؟',en:'<strong>Q6 (Ex.24):</strong> Same collection. P(one rap and one rock)?'},
+  options:[{ar:'<span class="math-display">9/80</span>',en:'<span class="math-display">9/80</span>'},{ar:'<span class="math-display">7/10</span>',en:'<span class="math-display">7/10</span>'},{ar:'<span class="math-display">3/13</span>',en:'<span class="math-display">3/13</span>'},{ar:'<span class="math-display">3/26</span>',en:'<span class="math-display">3/26</span>'}],
+  correct:2, answer:{ar:'P = 2 × 10/40 × 18/39 = 360/1560 = 3/13 (الضرب في 2 لترتيبين)',en:'P = 3/13 (×2 for two orders)'} },
+{ q:{ar:'<strong>السؤال 7:</strong> المجموعة نفسها. ما احتمال أن يكون أحدهما بوب والآخر شعبية؟',en:'<strong>Q7:</strong> Same collection. P(one pop and one popular)?'},
+  options:[{ar:'<span class="math-display">4/195</span>',en:'<span class="math-display">4/195</span>'},{ar:'<span class="math-display">8/195</span>',en:'<span class="math-display">8/195</span>'},{ar:'<span class="math-display">1/5</span>',en:'<span class="math-display">1/5</span>'},{ar:'<span class="math-display">8/39</span>',en:'<span class="math-display">8/39</span>'}],
+  correct:1, answer:{ar:'P = 2 × 4/40 × 8/39 = 64/1560 = 8/195',en:'P = 8/195'} },
+{ q:{ar:'<strong>السؤال 8:</strong> المجموعة نفسها. ما احتمال أن يكون أحدهما راب والآخر بوب؟',en:'<strong>Q8:</strong> Same collection. P(one rap and one pop)?'},
+  options:[{ar:'<span class="math-display">1/39</span>',en:'<span class="math-display">1/39</span>'},{ar:'<span class="math-display">2/39</span>',en:'<span class="math-display">2/39</span>'},{ar:'<span class="math-display">10/39</span>',en:'<span class="math-display">10/39</span>'},{ar:'<span class="math-display">4/39</span>',en:'<span class="math-display">4/39</span>'}],
+  correct:1, answer:{ar:'P = 2 × 10/40 × 4/39 = 80/1560 = 2/39',en:'P = 2/39'} },
+{ q:{ar:'<strong>السؤال 9:</strong> المجموعة نفسها. ما احتمال أن يكون أحدهما روك والآخر شعبية؟',en:'<strong>Q9:</strong> Same collection. P(one rock and one popular)?'},
+  options:[{ar:'<span class="math-display">6/65</span>',en:'<span class="math-display">6/65</span>'},{ar:'<span class="math-display">18/65</span>',en:'<span class="math-display">18/65</span>'},{ar:'<span class="math-display">12/65</span>',en:'<span class="math-display">12/65</span>'},{ar:'<span class="math-display">12/13</span>',en:'<span class="math-display">12/13</span>'}],
+  correct:2, answer:{ar:'P = 2 × 18/40 × 8/39 = 288/1560 = 12/65',en:'P = 12/65'} },
+{ q:{ar:'<strong>السؤال 10 (تمرين 25):</strong> المجموعة نفسها. ما احتمال ألا يكون أي من القرصين من أغاني الروك؟',en:'<strong>Q10 (Ex.25):</strong> Same collection. P(neither is rock)?'},
+  options:[{ar:'<span class="math-display">77/260</span>',en:'<span class="math-display">77/260</span>'},{ar:'<span class="math-display">11/20</span>',en:'<span class="math-display">11/20</span>'},{ar:'<span class="math-display">121/400</span>',en:'<span class="math-display">121/400</span>'},{ar:'<span class="math-display">183/260</span>',en:'<span class="math-display">183/260</span>'}],
+  correct:0, answer:{ar:'غير الروك 22: P = 22/40 × 21/39 = 462/1560 = 77/260',en:'P = 77/260'} }
+]},
+{ id:'s3', title:{ar:'🔹 القسم 3: حدثان مستقلان (مثل 26) (Q11-Q15)',en:'🔹 Section 3: Independent Events (like 26) (Q11-Q15)'}, questions:[
+{ q:{ar:'<strong>السؤال 11 (تمرين 26):</strong> يتم إلقاء مكعب أعداد مرتين. ما احتمال الحصول على العدد 5 مرتين؟',en:'<strong>Q11 (Ex.26):</strong> A die is rolled twice. P(5 both times)?'},
+  svg: svgGraphs.fig_dice_indep,
+  options:[{ar:'<span class="math-display">1/6</span>',en:'<span class="math-display">1/6</span>'},{ar:'<span class="math-display">1/12</span>',en:'<span class="math-display">1/12</span>'},{ar:'<span class="math-display">1/36</span>',en:'<span class="math-display">1/36</span>'},{ar:'<span class="math-display">1/3</span>',en:'<span class="math-display">1/3</span>'}],
+  correct:2, answer:{ar:'حدثان مستقلان: P = 1/6 × 1/6 = 1/36',en:'P = 1/36'} },
+{ q:{ar:'<strong>السؤال 12:</strong> رميت قطعتان نقديتان. ما احتمال ظهور صورتين معاً؟',en:'<strong>Q12:</strong> Two coins tossed. P(two heads)?'},
+  options:[{ar:'<span class="math-display">1/2</span>',en:'<span class="math-display">1/2</span>'},{ar:'<span class="math-display">1/4</span>',en:'<span class="math-display">1/4</span>'},{ar:'<span class="math-display">1/8</span>',en:'<span class="math-display">1/8</span>'},{ar:'<span class="math-display">1/16</span>',en:'<span class="math-display">1/16</span>'}],
+  correct:1, answer:{ar:'P = 1/2 × 1/2 = 1/4',en:'P = 1/4'} },
+{ q:{ar:'<strong>السؤال 13:</strong> دُوّر مكعب مرتين. ما احتمال ظهور عدد زوجي في المرتين؟',en:'<strong>Q13:</strong> A die rolled twice. P(even both times)?'},
+  options:[{ar:'<span class="math-display">1/2</span>',en:'<span class="math-display">1/2</span>'},{ar:'<span class="math-display">1/4</span>',en:'<span class="math-display">1/4</span>'},{ar:'<span class="math-display">1/36</span>',en:'<span class="math-display">1/36</span>'},{ar:'<span class="math-display">1/6</span>',en:'<span class="math-display">1/6</span>'}],
+  correct:1, answer:{ar:'P(زوجي) = 1/2 ⇒ P = 1/2 × 1/2 = 1/4',en:'P = 1/4'} },
+{ q:{ar:'<strong>السؤال 14:</strong> دُوّر مكعب مرتين. ما احتمال ظهور 2 أولاً ثم 5 ثانياً؟',en:'<strong>Q14:</strong> A die rolled twice. P(2 then 5)?'},
+  options:[{ar:'<span class="math-display">1/6</span>',en:'<span class="math-display">1/6</span>'},{ar:'<span class="math-display">1/12</span>',en:'<span class="math-display">1/12</span>'},{ar:'<span class="math-display">1/36</span>',en:'<span class="math-display">1/36</span>'},{ar:'<span class="math-display">1/3</span>',en:'<span class="math-display">1/3</span>'}],
+  correct:2, answer:{ar:'P = 1/6 × 1/6 = 1/36',en:'P = 1/36'} },
+{ q:{ar:'<strong>السؤال 15:</strong> رميت قطعة نقدية ودُوّر مكعب. ما احتمال صورة والعدد 6؟',en:'<strong>Q15:</strong> A coin tossed and a die rolled. P(head and 6)?'},
+  options:[{ar:'<span class="math-display">1/8</span>',en:'<span class="math-display">1/8</span>'},{ar:'<span class="math-display">1/12</span>',en:'<span class="math-display">1/12</span>'},{ar:'<span class="math-display">1/6</span>',en:'<span class="math-display">1/6</span>'},{ar:'<span class="math-display">7/12</span>',en:'<span class="math-display">7/12</span>'}],
+  correct:1, answer:{ar:'P = 1/2 × 1/6 = 1/12',en:'P = 1/12'} }
+]},
+{ id:'s4', title:{ar:'🔹 القسم 4: الفرص من الاحتمال (مثل 27-30) (Q16-Q20)',en:'🔹 Section 4: Odds from Probability (like 27-30) (Q16-Q20)'}, questions:[
+{ q:{ar:'<strong>السؤال 16 (تمرين 27):</strong> صندوق فيه 1 أخضر و2 أصفر و3 أحمر. سُحبت كرتان دون إعادة. ما فرص (نجاح:فشل) سحب كرتين حمراوين؟',en:'<strong>Q16 (Ex.27):</strong> Box: 1 green, 2 yellow, 3 red. Two drawn without replacement. Odds of two reds?'},
+  svg: svgGraphs.fig_balls,
+  options:[{ar:'<span class="math-display">1:5</span>',en:'<span class="math-display">1:5</span>'},{ar:'<span class="math-display">1:4</span>',en:'<span class="math-display">1:4</span>'},{ar:'<span class="math-display">1:3</span>',en:'<span class="math-display">1:3</span>'},{ar:'<span class="math-display">4:1</span>',en:'<span class="math-display">4:1</span>'}],
+  correct:1, answer:{ar:'P = 3/6 × 2/5 = 1/5 ⇒ نجاح 1 وفشل 4 ⇒ الفرص 1:4',en:'P = 1/5 ⇒ odds 1:4'} },
+{ q:{ar:'<strong>السؤال 17 (تمرين 28):</strong> الصندوق نفسه. ما فرص عدم سحب كرتين لونهما أصفر؟',en:'<strong>Q17 (Ex.28):</strong> Same box. Odds of NOT drawing two yellows?'},
+  options:[{ar:'<span class="math-display">3:2</span>',en:'<span class="math-display">3:2</span>'},{ar:'<span class="math-display">2:5</span>',en:'<span class="math-display">2:5</span>'},{ar:'<span class="math-display">2:3</span>',en:'<span class="math-display">2:3</span>'},{ar:'<span class="math-display">3:5</span>',en:'<span class="math-display">3:5</span>'}],
+  correct:2, answer:{ar:'P(لا صفراوان) = 4/6 × 3/5 = 2/5 ⇒ نجاح 2 وفشل 3 ⇒ الفرص 2:3',en:'P = 2/5 ⇒ odds 2:3'} },
+{ q:{ar:'<strong>السؤال 18 (تمرين 29):</strong> الصندوق نفسه. ما فرص سحب كرة خضراء وأخرى حمراء؟',en:'<strong>Q18 (Ex.29):</strong> Same box. Odds of one green and one red?'},
+  options:[{ar:'<span class="math-display">1:4</span>',en:'<span class="math-display">1:4</span>'},{ar:'<span class="math-display">1:5</span>',en:'<span class="math-display">1:5</span>'},{ar:'<span class="math-display">3:1</span>',en:'<span class="math-display">3:1</span>'},{ar:'<span class="math-display">1:2</span>',en:'<span class="math-display">1:2</span>'}],
+  correct:0, answer:{ar:'P = 2 × 1/6 × 3/5 = 1/5 ⇒ الفرص 1:4',en:'P = 1/5 ⇒ odds 1:4'} },
+{ q:{ar:'<strong>السؤال 19 (تمرين 30):</strong> الصندوق نفسه. ما فرص سحب كرتين بلونين مختلفين؟',en:'<strong>Q19 (Ex.30):</strong> Same box. Odds of two different colors?'},
+  svg: svgGraphs.fig_complement,
+  options:[{ar:'<span class="math-display">4:11</span>',en:'<span class="math-display">4:11</span>'},{ar:'<span class="math-display">11:15</span>',en:'<span class="math-display">11:15</span>'},{ar:'<span class="math-display">3:1</span>',en:'<span class="math-display">3:1</span>'},{ar:'<span class="math-display">11:4</span>',en:'<span class="math-display">11:4</span>'}],
+  correct:3, answer:{ar:'P(متشابهان) = 4/15 ⇒ P(مختلفان) = 11/15 ⇒ الفرص 11:4',en:'P = 11/15 ⇒ odds 11:4'} },
+{ q:{ar:'<strong>السؤال 20:</strong> الصندوق نفسه. ما فرص سحب كرتين صفراوين؟',en:'<strong>Q20:</strong> Same box. Odds of two yellows?'},
+  options:[{ar:'<span class="math-display">1:15</span>',en:'<span class="math-display">1:15</span>'},{ar:'<span class="math-display">1:14</span>',en:'<span class="math-display">1:14</span>'},{ar:'<span class="math-display">14:1</span>',en:'<span class="math-display">14:1</span>'},{ar:'<span class="math-display">2:15</span>',en:'<span class="math-display">2:15</span>'}],
+  correct:1, answer:{ar:'P = 2/6 × 1/5 = 1/15 ⇒ نجاح 1 وفشل 14 ⇒ الفرص 1:14',en:'P = 1/15 ⇒ odds 1:14'} }
+]},
+{ id:'s5', title:{ar:'🔹 القسم 5: مفاهيم الاحتمال والفرص (Q21-Q25)',en:'🔹 Section 5: Probability & Odds Concepts (Q21-Q25)'}, questions:[
+{ q:{ar:'<strong>السؤال 21:</strong> إذا كان احتمال نجاح حدث <span class="math-display">P = 3/7</span> فما فرص نجاحه؟',en:'<strong>Q21:</strong> If P(success) = 3/7, the odds in favor are:'},
+  svg: svgGraphs.fig_odds,
+  options:[{ar:'<span class="math-display">4:3</span>',en:'<span class="math-display">4:3</span>'},{ar:'<span class="math-display">3:4</span>',en:'<span class="math-display">3:4</span>'},{ar:'<span class="math-display">3:7</span>',en:'<span class="math-display">3:7</span>'},{ar:'<span class="math-display">7:3</span>',en:'<span class="math-display">7:3</span>'}],
+  correct:1, answer:{ar:'نجاح 3 وفشل 7-3 = 4 ⇒ الفرص 3:4',en:'Odds 3:4'} },
+{ q:{ar:'<strong>السؤال 22:</strong> إذا كانت فرص نجاح حدث <span class="math-display">2:5</span> فما احتمال نجاحه؟',en:'<strong>Q22:</strong> If odds in favor are 2:5, P(success) ='},
+  options:[{ar:'<span class="math-display">5/7</span>',en:'<span class="math-display">5/7</span>'},{ar:'<span class="math-display">2/7</span>',en:'<span class="math-display">2/7</span>'},{ar:'<span class="math-display">2/5</span>',en:'<span class="math-display">2/5</span>'},{ar:'<span class="math-display">7/2</span>',en:'<span class="math-display">7/2</span>'}],
+  correct:1, answer:{ar:'P = 2/(2+5) = 2/7',en:'P = 2/7'} },
+{ q:{ar:'<strong>السؤال 23:</strong> فرص نجاح حدث (العُدد) تُعرّف بأنها:',en:'<strong>Q23:</strong> The odds in favor of an event are defined as:'},
+  options:[{ar:'نسبة عدد مرات النجاح إلى عدد مرات الفشل (نجاح : فشل)',en:'Ratio of successes to failures (success : failure)'},{ar:'نسبة النجاح إلى مجموع النواتج',en:'Ratio of successes to total outcomes'},{ar:'احتمال الفشل فقط',en:'Only the failure probability'},{ar:'مجموع احتمالي النجاح والفشل',en:'Sum of success and failure probabilities'}],
+  correct:0, answer:{ar:'الفرص = نجاح : فشل (وليس نجاح : الكل)',en:'Odds = success : failure'} },
+{ q:{ar:'<strong>السؤال 24:</strong> إذا كان <span class="math-display">P = 0.25</span> فما فرص النجاح؟',en:'<strong>Q24:</strong> If P = 0.25, the odds in favor are:'},
+  options:[{ar:'<span class="math-display">3:1</span>',en:'<span class="math-display">3:1</span>'},{ar:'<span class="math-display">1:3</span>',en:'<span class="math-display">1:3</span>'},{ar:'<span class="math-display">1:4</span>',en:'<span class="math-display">1:4</span>'},{ar:'<span class="math-display">4:1</span>',en:'<span class="math-display">4:1</span>'}],
+  correct:1, answer:{ar:'P = 1/4 ⇒ نجاح 1 وفشل 3 ⇒ الفرص 1:3',en:'Odds 1:3'} },
+{ q:{ar:'<strong>السؤال 25:</strong> الفرق الجوهري بين الاحتمال والفرص هو:',en:'<strong>Q25:</strong> The key difference between probability and odds is:'},
+  options:[{ar:'الاحتمال = نجاح/الكل بينما الفرص = نجاح : فشل',en:'Probability = success/total while odds = success : failure'},{ar:'الاحتمال = نجاح : فشل بينما الفرص = نجاح/الكل',en:'Probability = success : failure while odds = success/total'},{ar:'لا فرق بينهما',en:'No difference'},{ar:'الفرص دائماً تساوي الاحتمال مربعاً',en:'Odds always equal probability squared'}],
+  correct:0, answer:{ar:'المقام في الاحتمال هو الكل، أما الفرص فنسبة نجاح إلى فشل',en:'Probability uses total; odds compare success to failure'} }
+]},
+{ id:'s6', title:{ar:'🔹 القسم 6: تطبيقات مركبة (Q26-Q30)',en:'🔹 Section 6: Mixed Applications (Q26-Q30)'}, questions:[
+{ q:{ar:'<strong>السؤال 26:</strong> كيس فيه 5 حمراء و3 زرقاء. سُحبت كرتان دون إعادة. ما احتمال أن تكونا زرقاوين؟',en:'<strong>Q26:</strong> Bag: 5 red, 3 blue. Two drawn without replacement. P(both blue)?'},
+  svg: svgGraphs.fig_replace,
+  options:[{ar:'<span class="math-display">9/64</span>',en:'<span class="math-display">9/64</span>'},{ar:'<span class="math-display">3/28</span>',en:'<span class="math-display">3/28</span>'},{ar:'<span class="math-display">3/14</span>',en:'<span class="math-display">3/14</span>'},{ar:'<span class="math-display">15/56</span>',en:'<span class="math-display">15/56</span>'}],
+  correct:1, answer:{ar:'P = 3/8 × 2/7 = 6/56 = 3/28',en:'P = 3/28'} },
+{ q:{ar:'<strong>السؤال 27:</strong> الكيس نفسه. ما فرص سحب كرتين حمراوين؟',en:'<strong>Q27:</strong> Same bag. Odds of two reds?'},
+  options:[{ar:'<span class="math-display">5:14</span>',en:'<span class="math-display">5:14</span>'},{ar:'<span class="math-display">5:9</span>',en:'<span class="math-display">5:9</span>'},{ar:'<span class="math-display">9:5</span>',en:'<span class="math-display">9:5</span>'},{ar:'<span class="math-display">5:4</span>',en:'<span class="math-display">5:4</span>'}],
+  correct:1, answer:{ar:'P = 5/8 × 4/7 = 20/56 = 5/14 ⇒ نجاح 5 وفشل 9 ⇒ الفرص 5:9',en:'P = 5/14 ⇒ odds 5:9'} },
+{ q:{ar:'<strong>السؤال 28:</strong> الكيس نفسه لكن مع الإعادة. ما احتمال سحب كرتين زرقاوين؟',en:'<strong>Q28:</strong> Same bag but with replacement. P(two blues)?'},
+  options:[{ar:'<span class="math-display">3/28</span>',en:'<span class="math-display">3/28</span>'},{ar:'<span class="math-display">9/64</span>',en:'<span class="math-display">9/64</span>'},{ar:'<span class="math-display">9/56</span>',en:'<span class="math-display">9/56</span>'},{ar:'<span class="math-display">6/64</span>',en:'<span class="math-display">6/64</span>'}],
+  correct:1, answer:{ar:'مع الإعادة: P = 3/8 × 3/8 = 9/64',en:'P = 9/64'} },
+{ q:{ar:'<strong>السؤال 29:</strong> صندوق فيه 4 بيضاء و6 سوداء. سُحبت كرتان دون إعادة. ما فرص سحب كرة من كل لون؟',en:'<strong>Q29:</strong> Box: 4 white, 6 black. Two drawn without replacement. Odds of one of each color?'},
+  options:[{ar:'<span class="math-display">8:15</span>',en:'<span class="math-display">8:15</span>'},{ar:'<span class="math-display">7:8</span>',en:'<span class="math-display">7:8</span>'},{ar:'<span class="math-display">8:7</span>',en:'<span class="math-display">8:7</span>'},{ar:'<span class="math-display">4:6</span>',en:'<span class="math-display">4:6</span>'}],
+  correct:2, answer:{ar:'P = 2 × 4/10 × 6/9 = 48/90 = 8/15 ⇒ نجاح 8 وفشل 7 ⇒ الفرص 8:7',en:'P = 8/15 ⇒ odds 8:7'} },
+{ q:{ar:'<strong>السؤال 30:</strong> رميت قطعتين نقديتين. ما فرص ظهور صورة واحدة على الأقل؟',en:'<strong>Q30:</strong> Two coins tossed. Odds of at least one head?'},
+  options:[{ar:'<span class="math-display">1:3</span>',en:'<span class="math-display">1:3</span>'},{ar:'<span class="math-display">3:1</span>',en:'<span class="math-display">3:1</span>'},{ar:'<span class="math-display">3:4</span>',en:'<span class="math-display">3:4</span>'},{ar:'<span class="math-display">4:1</span>',en:'<span class="math-display">4:1</span>'}],
+  correct:1, answer:{ar:'P = 3/4 (يستبعد TT) ⇒ نجاح 3 وفشل 1 ⇒ الفرص 3:1',en:'P = 3/4 ⇒ odds 3:1'} }
+]}
+]};
+
+function shuffleArray(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+function prepareShuffledExam(){rng=mulberry32(currentSeed);examData=JSON.parse(JSON.stringify(originalExamData));correctAnswersMap={};let g=0;examData.sections.forEach(s=>{s.questions=shuffleArray(s.questions);s.questions.forEach(q=>{const oc=q.options.map((o,i)=>({option:o,isCorrect:i===q.correct}));const sh=shuffleArray(oc);q.options=sh.map(o=>o.option);q.correct=sh.findIndex(o=>o.isCorrect);correctAnswersMap[g]=String.fromCharCode(97+q.correct);g++})})}
+function reshuffleExam(){if(confirm(currentLang==='ar'?'🔄 سيتم إنشاء أسئلة جديدة ومسح إجاباتك. هل أنت متأكد؟':'🔄 New questions will be generated. Are you sure?')){currentSeed=Date.now();timeRemaining=TOTAL_TIME;answersVisible=false;prepareShuffledExam();renderExam();saveState();alert(currentLang==='ar'?'🎲 تم تغيير الأسئلة! حظاً موفقاً! 🍀':' Questions changed! Good luck! 🍀');window.scrollTo({top:0,behavior:'smooth'})}}
+function setLanguage(lang){currentLang=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.getElementById('btn-ar').classList.toggle('active',lang==='ar');document.getElementById('btn-en').classList.toggle('active',lang==='en');document.body.classList.toggle('en-mode',lang==='en');document.querySelectorAll('[data-ar]').forEach(el=>{el.textContent=el.getAttribute('data-'+lang)});document.querySelectorAll('[data-placeholder-ar]').forEach(el=>{el.placeholder=el.getAttribute('data-placeholder-'+lang)});renderExam();saveState(false)}
+function renderExam(){const container=document.getElementById('exam-content');const lbl={option:['a)','b)','c)','d)'],answer:currentLang==='ar'?'✅ الإجابة:':'✅ Answer:'};let html='',g=0;
+examData.sections.forEach((section,si)=>{const bc=['module-1','module-2','module-3','module-4','module-5','module-6'][si];html+='<section class="bg-white p-6 rounded-2xl shadow-lg border-2 border-fuchsia-100"><div class="text-center mb-4"><span class="module-badge '+bc+'">'+section.title[currentLang]+'</span></div><ol class="space-y-4 text-sm">';
+section.questions.forEach(q=>{html+='<li class="border-r-4 border-fuchsia-400 pr-4 py-2" id="q-'+g+'" style="border-right:4px solid #a21caf;padding-right:1rem;"><strong class="text-fuchsia-700">'+(g+1)+'.</strong> '+q.q[currentLang]+'<br>';
+if(q.svg)html+='<div class="graph-container">'+q.svg+'</div>';
+q.options.forEach((opt,oi)=>{html+='<label class="cursor-pointer block mt-2 mr-4 hover:bg-fuchsia-50 rounded-lg p-2 transition" style="margin-right:1rem;"><input type="radio" name="q'+g+'" value="'+String.fromCharCode(97+oi)+'" class="mr-2 ml-2"><span class="arabic-math">'+lbl.option[oi]+' '+opt[currentLang]+'</span></label>'});
+html+='<div class="answer-box text-green-700 mt-3 font-medium '+(answersVisible?'':'hidden')+' bg-green-50 rounded-lg p-3 border border-green-200">'+lbl.answer+' '+lbl.option[q.correct]+' <span class="arabic-math">'+q.options[q.correct][currentLang]+'</span><br><span class="text-sm text-green-700 mt-2 block arabic-math">'+q.answer[currentLang]+'</span></div></li>';g++});
+html+='</ol></section>'});
+container.innerHTML=html}
+function startTimer(){updateTimerDisplay();timerInterval=setInterval(()=>{timeRemaining--;updateTimerDisplay();if(timeRemaining%60===0)saveState(false);if(timeRemaining<=600)document.getElementById('timer').classList.add('timer-warning');if(timeRemaining<=0){clearInterval(timerInterval);alert(currentLang==='ar'?'⏰ انتهى الوقت!':"⏰ Time's up!");gradeExam()}},1000)}
+function updateTimerDisplay(){const m=Math.floor(timeRemaining/60),s=timeRemaining%60;document.getElementById('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function toggleAnswers(){answersVisible=!answersVisible;document.querySelectorAll('.answer-box').forEach(el=>el.classList.toggle('hidden',!answersVisible));saveState(false)}
+function gradeExam(){let cc=0;const ss=new Array(TOTAL_SECTIONS).fill(0);
+for(let i=0;i<TOTAL_QUESTIONS;i++){const sel=document.querySelector('input[name="q'+i+'"]:checked');const li=document.getElementById('q-'+i);if(li){const ok=sel&&sel.value===correctAnswersMap[i];if(ok){cc++;li.classList.add('correct');li.classList.remove('incorrect');ss[Math.floor(i/QUESTIONS_PER_SECTION)]++}else{li.classList.add('incorrect');li.classList.remove('correct')}}}
+const score=Math.round(cc/TOTAL_QUESTIONS*100);document.getElementById('res-total').textContent=score+' / 100';document.getElementById('res-name').textContent=document.getElementById('studentName').value||(currentLang==='ar'?'بطل':'Champion');document.getElementById('res-date').textContent=new Date().toLocaleDateString(currentLang==='ar'?'ar-AE':'en-US');
+const pc=document.getElementById('sections-performance');pc.innerHTML='';examData.sections.forEach((s,i)=>{pc.innerHTML+='<div class="flex justify-between items-center p-3 bg-white rounded-lg"><span class="text-gray-700">'+s.title[currentLang]+'</span><span class="font-bold text-fuchsia-700">'+ss[i]+'/'+QUESTIONS_PER_SECTION+'</span></div>'});
+const badge=document.getElementById('success-badge');document.getElementById('success-percent').textContent=score+'%';
+if(currentLang==='ar'){if(score>=90){badge.textContent='🌟 ممتاز جداً!';badge.className='success-badge grade-excellent'}else if(score>=75){badge.textContent='👏 ممتاز!';badge.className='success-badge grade-good'}else if(score>=50){badge.textContent='👍 جيد';badge.className='success-badge grade-pass'}else{badge.textContent='💪 حاول مرة أخرى';badge.className='success-badge grade-fail'}}
+else{if(score>=90){badge.textContent='🌟 Outstanding!';badge.className='success-badge grade-excellent'}else if(score>=75){badge.textContent='👏 Excellent!';badge.className='success-badge grade-good'}else if(score>=50){badge.textContent='👍 Good';badge.className='success-badge grade-pass'}else{badge.textContent='💪 Try Again';badge.className='success-badge grade-fail'}}
+document.getElementById('results-panel').classList.remove('hidden');document.getElementById('results-panel').scrollIntoView({behavior:'smooth'});if(timerInterval)clearInterval(timerInterval)}
+function sendResultsToEmail(){const btn=document.getElementById('sendEmailBtn'),status=document.getElementById('emailStatus');btn.disabled=true;btn.textContent=currentLang==='ar'?'⏳ جاري الإرسال...':'⏳ Sending...';
+const name=document.getElementById('studentName').value||'N/A',klass=document.getElementById('studentClass').value||'N/A',date=document.getElementById('examDate').value||new Date().toLocaleDateString(),score=document.getElementById('res-total').textContent,rate=document.getElementById('success-percent').textContent,badge=document.getElementById('success-badge').textContent;
+let qh='<div style="font-family:Arial;direction:rtl"><h2>🎯 '+(currentLang==='ar'?'نتيجة امتحان فرص النجاح والفشل - رياضيات 11 عام':'Odds Exam Result - Grade 11')+'</h2><p><b>الاسم:</b> '+name+'</p><p><b>الشعبة:</b> '+klass+'</p><p><b>التاريخ:</b> '+date+'</p><p><b>الدرجة:</b> '+score+' ('+rate+')</p><p><b>التقدير:</b> '+badge+'</p><hr><table style="width:100%;border-collapse:collapse"><tr style="background:#a21caf;color:white"><th style="padding:8px;border:1px solid #ddd">#</th><th style="padding:8px;border:1px solid #ddd">السؤال</th><th style="padding:8px;border:1px solid #ddd">إجابة الطالب</th><th style="padding:8px;border:1px solid #ddd">الصحيحة</th><th style="padding:8px;border:1px solid #ddd">النتيجة</th></tr>';
+let g=0;examData.sections.forEach(sec=>{qh+='<tr style="background:#fae8ff"><td colspan="5" style="padding:8px;font-weight:bold;border:1px solid #ddd">'+sec.title.ar+'</td></tr>';sec.questions.forEach(q=>{const sel=document.querySelector('input[name="q'+g+'"]:checked');const sv=sel?sel.value:null;const cv=correctAnswersMap[g];const ic=sv===cv;let sat=sv?q.options[sv.charCodeAt(0)-97][currentLang]:(currentLang==='ar'?'❌ لم يجب':'❌ No answer');const sac=ic?'#16a34a':'#dc2626';const cat=q.options[q.correct][currentLang];const rb=ic?'#f0fdf4':'#fef2f2';qh+='<tr style="background:'+rb+'"><td style="padding:8px;border:1px solid #ddd;text-align:center">'+(g+1)+'</td><td style="padding:8px;border:1px solid #ddd">'+q.q.ar.replace(/<[^>]+>/g,'').substring(0,70)+'...</td><td style="padding:8px;border:1px solid #ddd;color:'+sac+'">'+sat+'</td><td style="padding:8px;border:1px solid #ddd;color:#16a34a">'+cat+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+(ic?'✅':'❌')+'</td></tr>';g++})});
+qh+='</table></div>';
+emailjs.send(SERVICE_ID,TEMPLATE_ID,{to_email:TARGET_EMAIL,student_name:name,student_class:klass,exam_date:date,total_score:score,success_rate:rate,grade:badge,answers_table:qh})
+.then(()=>{status.textContent=currentLang==='ar'?'✅ تم الإرسال بنجاح!':'✅ Sent successfully!';status.style.color='#16a34a';btn.textContent=currentLang==='ar'?'✓ تم':'✓ Sent';alert(currentLang==='ar'?'تم إرسال النتيجة للمعلم بنجاح!':'Result sent to teacher successfully!')})
+.catch(err=>{status.textContent=currentLang==='ar'?'❌ فشل الإرسال':'❌ Failed';status.style.color='#dc2626';btn.disabled=false;btn.textContent=currentLang==='ar'?'📧 حاول مرة أخرى':'📧 Try Again'});}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=loadState();
+  if(saved&&saved.seed){currentSeed=saved.seed;currentLang=saved.lang||'ar';timeRemaining=saved.timeRemaining!==undefined?saved.timeRemaining:TOTAL_TIME;answersVisible=saved.answersVisible||false}else{currentSeed=Date.now()}
+  document.getElementById('btn-ar').classList.toggle('active',currentLang==='ar');
+  document.getElementById('btn-en').classList.toggle('active',currentLang==='en');
+  document.body.classList.toggle('en-mode',currentLang==='en');
+  document.documentElement.lang=currentLang;document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-ar]').forEach(el=>{el.textContent=el.getAttribute('data-'+currentLang)});
+  document.querySelectorAll('[data-placeholder-ar]').forEach(el=>{el.placeholder=el.getAttribute('data-placeholder-'+currentLang)});
+  prepareShuffledExam();renderExam();
+  if(saved){if(saved.studentName)document.getElementById('studentName').value=saved.studentName;if(saved.studentClass)document.getElementById('studentClass').value=saved.studentClass;if(saved.examDate)document.getElementById('examDate').value=saved.examDate;if(saved.answers)restoreAnswers(saved.answers)}
+  setupAnswerListeners();setupInputListeners();
+  document.getElementById('method-holder').innerHTML=svgGraphs.fig_total;
+  startTimer();
+});
+window.addEventListener('beforeunload',()=>saveState(false));
+</script>
+</body>
+</html>
